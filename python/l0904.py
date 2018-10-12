@@ -42,4 +42,41 @@ Note:
 
 1 <= tree.length <= 40000
 0 <= tree[i] < tree.length
+
+
+If I start from a tree I can't stop and have to put the fruit in a basket, but I want basket to have only one type of fruit. It is not clear if one needs to stop after a 3rd type of fruit is encountered.
+
+Since about 4 contests there is at least one question that is harder to understand than to solve. Is it too hard to have someone proofread it before posting?
 """
+
+class Solution:
+    def totalFruit(self, tree):
+        """
+        :type tree: List[int]
+        :rtype: int
+        """
+        type2freq = {}
+        set_type = set()
+        head = tail = 0
+        max_collect = 0
+        while tail < len(tree):
+            t = tree[tail]
+            if t not in set_type:
+                set_type.add(t)
+            type2freq[t] = type2freq.get(t, 0) + 1
+            while len(set_type) > 2:
+                remove_t = tree[head]
+                type2freq[remove_t] -= 1
+                if type2freq[remove_t] == 0:
+                    set_type.remove(remove_t)
+                head += 1
+            max_collect = max(max_collect, tail - head + 1)
+            tail += 1
+        return max_collect
+
+
+s = Solution()
+print(s.totalFruit([1,2,1]))
+print(s.totalFruit([0,1,2,2]))
+print(s.totalFruit([1,2,3,2,2]))
+print(s.totalFruit([3,3,3,1,2,1,1,2,3,3,4]))

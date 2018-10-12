@@ -30,25 +30,31 @@ TopVotedCandidate.q(int t) is always called with t >= times[0].
 class TopVotedCandidate(object):
 
     def __init__(self, persons, times):
-        self.persons = persons
+        self.leads = []
         self.times = times
-        self.cache = {}
+        person2times = {}
+        lead = None
+        for p, t in zip(persons, times):
+            person2times[p] = person2times.get(p, 0) + 1
+            if person2times[p] >= person2times.get(lead, 0):
+                lead = p
+            self.leads.append(lead)
 
     def q(self, t):
-        if t in self.cache:
-            return self.cache[t]
-        person2num_last = {}
-        for person, time in zip(self.persons, self.times):
-            if time > t:
-                break
-            if person not in person2num_last:
-                person2num_last[person] = [0, None]
-            person2num_last[person][0] += 1
-            person2num_last[person][1] = time
-        sort = sorted([(person, num, time) for person, (num, time) in person2num_last.items()], key=lambda x: (x[1], x[2]), reverse=True)
-        win_person = sort[0][0]
-        self.cache[t] = win_person
-        return win_person
+        if t >= self.times[-1]:
+            return self.leads[-1]
+        head, tail = 0, len(self.times) - 2
+        while head < tail:
+            mid = head + (tail - head) // 2
+            t1 = self.times[mid]
+            t2 = self.times[mid+1]
+            if t1 <= t < t2:
+                return self.leads[mid]
+            elif t < t1:
+                tail = mid - 1
+            else:
+                head = mid + 1
+        return self.leads[head]
 
 
 s = TopVotedCandidate([0,1,1,0,0,1,0],[0,5,10,15,20,25,30])
